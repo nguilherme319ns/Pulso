@@ -95,7 +95,6 @@ A Pulso utiliza ou prevê mecanismos de proteção como:
 - Tratamento centralizado de erros
 - Proteção das credenciais por variáveis de ambiente
 
-**Importante:** revise validação de entradas, autorização por recurso, limitação de requisições e configuração de produção antes de disponibilizar o sistema publicamente.
 
 ## 📈 Investimentos
 
@@ -129,7 +128,7 @@ Sugestões de boas práticas:
 
 ## 📄 Licença
 
-A definir pelo responsável pelo projeto.
+Todos os direitos reservados ao Gui :)
 
 ---
 
