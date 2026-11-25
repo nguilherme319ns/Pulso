@@ -1,0 +1,1004 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102520">
+    <meta name="description" content="Pulso: sua conta digital, com saldo, transferências e extrato em um só lugar. Ambiente de demonstração.">
+
+    <title>pulso — sua conta, em movimento</title>
+
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/styles.css">
+
+    <script type="module" src="/assets/app.mjs"></script>
+  </head>
+
+  <body>
+    <!-- TELA DE ACESSO -->
+    <main id="auth-view" class="auth-layout">
+      <a class="skip-link" href="#auth-heading">
+        Ir para o acesso à conta
+      </a>
+
+      <section class="auth-story" aria-label="Conheça a Pulso">
+        <a class="brand brand-light" href="/" aria-label="Pulso, início">
+          <span class="brand-mark">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#logo"></use>
+            </svg>
+          </span>
+
+          <span>
+            pulso<span class="brand-period">.</span>
+          </span>
+        </a>
+
+        <div class="auth-story-copy">
+          <span class="eyebrow eyebrow-light">
+            SUA CONTA, EM MOVIMENTO
+          </span>
+
+          <h1>
+            Mais clareza.<br>
+            Mais liberdade.<br>
+            <span>Mais seu ritmo.</span>
+          </h1>
+
+          <p>
+            Um lugar simples para movimentar seu dinheiro
+            e acompanhar cada novo passo.
+          </p>
+        </div>
+
+        <div class="auth-art" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="orbit orbit-three"></div>
+
+          <div class="orbit-core">
+            <svg class="icon">
+              <use href="/assets/icons.svg#logo"></use>
+            </svg>
+          </div>
+
+          <div class="orbit-token orbit-token-wallet">
+            <svg class="icon">
+              <use href="/assets/icons.svg#wallet"></use>
+            </svg>
+          </div>
+
+          <div class="orbit-token orbit-token-check">
+            <svg class="icon">
+              <use href="/assets/icons.svg#check"></use>
+            </svg>
+          </div>
+
+          <div class="orbit-caption">
+            <span class="mini-mark"></span>
+            <span>O próximo movimento é seu.</span>
+          </div>
+        </div>
+
+        <div class="auth-story-footer">
+          <span>
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#shield"></use>
+            </svg>
+            Cada movimento, à vista.
+          </span>
+
+          <span>01 / CONTA DIGITAL</span>
+        </div>
+      </section>
+
+      <section class="auth-panel" aria-labelledby="auth-heading">
+        <div class="auth-panel-top">
+          <a class="brand brand-mobile" href="/" aria-label="Pulso, início">
+            <span class="brand-mark">
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#logo"></use>
+              </svg>
+            </span>
+
+            <span>pulso.</span>
+          </a>
+
+          <span class="environment-badge">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#sparkles"></use>
+            </svg>
+            Ambiente de demonstração
+          </span>
+        </div>
+
+        <div class="auth-form-wrap">
+          <span class="eyebrow">SEU ESPAÇO FINANCEIRO</span>
+
+          <h2 id="auth-heading" tabindex="-1">
+            Bom ter você aqui.
+          </h2>
+
+          <p id="auth-description" class="auth-description">
+            Acesse sua conta e acompanhe o que importa.
+          </p>
+
+          <div class="auth-tabs" role="tablist" aria-label="Acessar ou criar conta">
+            <button
+              id="auth-tab-login"
+              class="auth-tab active"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="auth-form"
+            >
+              Entrar
+            </button>
+
+            <button
+              id="auth-tab-register"
+              class="auth-tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="auth-form"
+            >
+              Criar conta
+            </button>
+          </div>
+
+          <div
+            id="auth-message"
+            class="form-error"
+            role="alert"
+            hidden
+          ></div>
+
+          <form id="auth-form" class="form-stack">
+            <div id="auth-name-field" class="field" hidden>
+              <label class="field-label" for="auth-name">
+                Seu nome
+              </label>
+
+              <input
+                id="auth-name"
+                class="input"
+                name="name"
+                type="text"
+                autocomplete="name"
+                maxlength="120"
+                placeholder="Como podemos chamar você?"
+              >
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="auth-email">
+                E-mail
+              </label>
+
+              <input
+                id="auth-email"
+                class="input"
+                name="email"
+                type="email"
+                autocomplete="username"
+                maxlength="254"
+                placeholder="voce@exemplo.com"
+                required
+              >
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="auth-password">
+                Senha
+              </label>
+
+              <div class="password-input">
+                <input
+                  id="auth-password"
+                  class="input"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="Sua senha de acesso"
+                  required
+                >
+
+                <button
+                  id="password-toggle"
+                  class="icon-button"
+                  type="button"
+                  aria-label="Mostrar senha"
+                >
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#eye"></use>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <button
+              id="auth-submit"
+              class="button button-primary auth-submit"
+              type="submit"
+            >
+              Entrar na minha conta
+            </button>
+          </form>
+
+          <div class="auth-divider">
+            <span>OU CONHEÇA A EXPERIÊNCIA</span>
+          </div>
+
+          <button
+            id="demo-button"
+            class="button button-secondary demo-button"
+            type="button"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#sparkles"></use>
+            </svg>
+            Experimentar demonstração
+          </button>
+
+          <p class="demo-explainer">
+            Uma conta fictícia, com movimentações de exemplo,
+            para você explorar cada detalhe.
+          </p>
+        </div>
+
+        <footer class="auth-footer">
+          <span data-health-status class="health-status">
+            Verificando conexão…
+          </span>
+
+          <span>Uma experiência com dados fictícios.</span>
+        </footer>
+      </section>
+    </main>
+
+    <!-- PAINEL DA CONTA -->
+    <div id="app-view" class="app-shell" hidden>
+      <a class="skip-link" href="#page-title">
+        Ir para o conteúdo
+      </a>
+
+      <aside class="sidebar">
+        <a
+          class="brand brand-light sidebar-brand"
+          href="/"
+          aria-label="Pulso, início"
+        >
+          <span class="brand-mark">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#logo"></use>
+            </svg>
+          </span>
+
+          <span>
+            pulso<span class="brand-period">.</span>
+          </span>
+        </a>
+
+        <div class="sidebar-caption">SEU DIA A DIA</div>
+
+        <nav class="sidebar-nav" aria-label="Menu principal">
+          <button
+            class="nav-item active"
+            type="button"
+            data-view="overview"
+            aria-current="page"
+          >
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#home"></use>
+            </svg>
+            <span>Visão geral</span>
+          </button>
+
+          <button class="nav-item" type="button" data-action="transfer">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#transfer"></use>
+            </svg>
+            <span>Transferir</span>
+          </button>
+
+          <button class="nav-item" type="button" data-view="statement">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#history"></use>
+            </svg>
+            <span>Extrato</span>
+          </button>
+
+          <button class="nav-item" type="button" data-view="accounts">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#wallet"></use>
+            </svg>
+            <span>Minhas contas</span>
+          </button>
+
+          <button class="nav-item" type="button" data-view="investments">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#bank"></use>
+            </svg>
+            <span>Investimentos</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="sidebar-note">
+            <span class="sidebar-note-icon">
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#sparkles"></use>
+              </svg>
+            </span>
+
+            <strong>Explore no seu ritmo.</strong>
+
+            <p>
+              Você está em um ambiente de demonstração.
+            </p>
+          </div>
+
+          <div class="sidebar-profile">
+            <div
+              id="customer-initials"
+              class="profile-avatar"
+              aria-hidden="true"
+            >
+              P
+            </div>
+
+            <div class="profile-copy">
+              <strong id="customer-name">Minha conta</strong>
+              <span id="customer-email"></span>
+            </div>
+
+            <button
+              class="icon-button sidebar-logout"
+              data-action="logout"
+              type="button"
+              aria-label="Sair da conta"
+              title="Sair da conta"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#logout"></use>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <div class="topbar-location">
+            <span class="topbar-wordmark">
+              pulso<span>.</span>
+            </span>
+
+            <span class="topbar-separator"></span>
+            <span>Conta digital</span>
+          </div>
+
+          <div class="topbar-tools">
+            <span class="environment-badge">
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#sparkles"></use>
+              </svg>
+              <span>Ambiente de demonstração</span>
+            </span>
+
+            <span data-health-status class="health-status">
+              Verificando…
+            </span>
+
+            <button
+              class="icon-button mobile-logout"
+              data-action="logout"
+              type="button"
+              aria-label="Sair da conta"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use href="/assets/icons.svg#logout"></use>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <main class="workspace-content">
+          <div class="workspace-heading">
+            <div>
+              <p id="current-date" class="current-date"></p>
+
+              <h1 id="page-title" tabindex="-1">
+                Visão geral
+              </h1>
+
+              <p id="page-subtitle" class="page-subtitle">
+                Seu dinheiro, visto com clareza.
+              </p>
+            </div>
+
+            <div class="account-controls">
+              <div class="account-select-wrap">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#bank"></use>
+                </svg>
+
+                <label for="account-selector" class="sr-only">
+                  Conta ativa
+                </label>
+
+                <select id="account-selector" aria-label="Conta ativa">
+                  <option>Carregando conta…</option>
+                </select>
+
+                <svg class="icon select-chevron" aria-hidden="true">
+                  <use href="/assets/icons.svg#chevron-down"></use>
+                </svg>
+              </div>
+
+              <button
+                id="refresh-button"
+                class="icon-button refresh-button"
+                type="button"
+                aria-label="Atualizar saldo e extrato"
+                title="Atualizar saldo e extrato"
+              >
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#refresh"></use>
+                </svg>
+              </button>
+
+
+              <!-- Alternância entre tema claro e escuro -->
+              <button
+                type="button"
+                id="theme-toggle"
+                class="theme-toggle"
+                aria-label="Ativar modo escuro"
+                aria-pressed="false"
+                title="Alternar tema"
+              >
+                <span id="theme-toggle-icon">☾</span>
+              </button>
+            </div>
+          </div>
+
+          <section
+            id="pending-banner"
+            class="notice notice-warning pending-banner"
+            aria-label="Movimentação aguardando confirmação"
+            hidden
+          >
+            <div>
+              <strong>Vamos confirmar seu último movimento.</strong>
+
+              <p id="pending-message">
+                Confira o resultado antes de iniciar uma nova movimentação.
+              </p>
+            </div>
+
+            <button
+              id="pending-retry"
+              class="button button-secondary button-small"
+              type="button"
+            >
+              Verificar operação
+            </button>
+          </section>
+
+          <!-- VISÃO GERAL -->
+          <section id="overview-view" aria-label="Visão geral da conta">
+            <div class="overview-top">
+              <article class="balance-card">
+                <div class="balance-decoration" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+
+                <div class="balance-card-top">
+                  <div class="balance-label">
+                    <span class="balance-symbol">
+                      <svg class="icon" aria-hidden="true">
+                        <use href="/assets/icons.svg#wallet"></use>
+                      </svg>
+                    </span>
+
+                    <span>Saldo disponível</span>
+                  </div>
+
+                  <button
+                    id="balance-visibility"
+                    class="icon-button balance-eye"
+                    type="button"
+                    aria-label="Ocultar saldo"
+                    aria-pressed="false"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#eye"></use>
+                    </svg>
+                  </button>
+                </div>
+
+                <div
+                  id="balance-amount"
+                  class="balance-value"
+                  aria-live="polite"
+                >
+                  —
+                </div>
+
+                <div class="balance-card-caption">
+                  <span id="balance-account">Sua conta digital</span>
+                  <span class="balance-ready">
+                    Disponível para movimentar
+                  </span>
+                </div>
+
+                <div class="balance-actions">
+                  <button
+                    class="button button-primary"
+                    type="button"
+                    data-action="transfer"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#transfer"></use>
+                    </svg>
+                    Transferir
+                  </button>
+
+                  <button
+                    class="button button-on-dark"
+                    type="button"
+                    data-action="deposit"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#plus"></use>
+                    </svg>
+                    Adicionar saldo
+                  </button>
+
+                  <button
+                    class="button button-on-dark"
+                    type="button"
+                    data-action="withdrawal"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#minus"></use>
+                    </svg>
+                    Sacar
+                  </button>
+                </div>
+              </article>
+
+              <article class="account-preview">
+                <div class="account-preview-heading">
+                  <span class="eyebrow">SEMPRE COM VOCÊ</span>
+
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#logo"></use>
+                  </svg>
+                </div>
+
+                <h2>
+                  Sua conta.<br>
+                  Seu próximo passo.
+                </h2>
+
+                <div class="account-preview-details">
+                  <div>
+                    <span>Número da conta</span>
+                    <strong id="account-number">—</strong>
+                  </div>
+
+                  <button
+                    id="copy-account-button"
+                    class="icon-button"
+                    type="button"
+                    aria-label="Copiar número da conta"
+                    title="Copiar número da conta"
+                  >
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#copy"></use>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="account-owner-line">
+                  <span id="account-owner">—</span>
+                  <span>Conta digital</span>
+                </div>
+              </article>
+            </div>
+
+            <div class="summary-heading">
+              <h2>Seu dinheiro em perspectiva</h2>
+
+              <p id="summary-caption">
+                Resumo dos lançamentos carregados
+              </p>
+            </div>
+
+            <section class="metrics-grid" aria-label="Resumo do extrato carregado">
+              <article class="metric">
+                <div class="metric-label">
+                  <span class="metric-icon metric-icon-in">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#plus"></use>
+                    </svg>
+                  </span>
+
+                  <span>Entradas</span>
+                </div>
+
+                <strong id="summary-in" class="metric-value">—</strong>
+              </article>
+
+              <article class="metric">
+                <div class="metric-label">
+                  <span class="metric-icon metric-icon-out">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#minus"></use>
+                    </svg>
+                  </span>
+
+                  <span>Saídas</span>
+                </div>
+
+                <strong id="summary-out" class="metric-value">—</strong>
+              </article>
+
+              <article class="metric">
+                <div class="metric-label">
+                  <span class="metric-icon metric-icon-count">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#receipt"></use>
+                    </svg>
+                  </span>
+
+                  <span>Movimentações</span>
+                </div>
+
+                <strong id="summary-count" class="metric-value">—</strong>
+              </article>
+            </section>
+
+            <div class="activity-grid">
+              <section
+                class="panel activity-panel"
+                aria-labelledby="recent-heading"
+              >
+                <div class="panel-heading">
+                  <div>
+                    <h2 id="recent-heading">Últimos movimentos</h2>
+                    <p>Cada detalhe do seu dia a dia.</p>
+                  </div>
+
+                  <button
+                    class="button button-ghost button-small"
+                    type="button"
+                    data-view="statement"
+                  >
+                    Ver extrato
+                  </button>
+                </div>
+
+                <div class="table-scroll">
+                  <table class="transactions-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Movimentação</th>
+                        <th scope="col">Data</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Valor</th>
+                      </tr>
+                    </thead>
+
+                    <tbody id="recent-activity"></tbody>
+                  </table>
+                </div>
+
+                <div id="recent-empty" class="empty-state" hidden>
+                  <span class="empty-icon">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#history"></use>
+                    </svg>
+                  </span>
+
+                  <h3>Sua história começa aqui.</h3>
+                  <p>Adicione saldo para fazer o primeiro movimento.</p>
+
+                  <button
+                    class="button button-secondary button-small"
+                    type="button"
+                    data-action="deposit"
+                  >
+                    Adicionar saldo
+                  </button>
+                </div>
+              </section>
+
+              <section
+                class="panel rhythm-panel"
+                aria-labelledby="rhythm-heading"
+              >
+                <div class="panel-heading">
+                  <div>
+                    <span class="eyebrow">DE OLHO NO SEU SALDO</span>
+                    <h2 id="rhythm-heading">O ritmo da conta</h2>
+                    <p>Saldo após cada movimento recente.</p>
+                  </div>
+
+                  <span class="rhythm-symbol">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="/assets/icons.svg#logo"></use>
+                    </svg>
+                  </span>
+                </div>
+
+                <div
+                  id="balance-chart"
+                  class="balance-chart"
+                  role="img"
+                  aria-label="Evolução do saldo nos lançamentos carregados"
+                ></div>
+
+                <div class="rhythm-footer">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#shield"></use>
+                  </svg>
+
+                  <p>
+                    Um histórico claro para acompanhar suas escolhas.
+                  </p>
+                </div>
+
+                <div class="rhythm-action">
+                  <span>Seu próximo movimento</span>
+                  <strong>Faça acontecer.</strong>
+
+                  <button
+                    class="button button-secondary button-small"
+                    type="button"
+                    data-action="transfer"
+                  >
+                    Fazer transferência
+                  </button>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <!-- EXTRATO -->
+          <section id="statement-view" aria-label="Extrato da conta" hidden>
+            <section class="panel statement-panel">
+              <div class="panel-heading statement-heading">
+                <div>
+                  <h2>Todos os seus movimentos</h2>
+                  <p>Encontre uma movimentação e abra seu comprovante.</p>
+                </div>
+
+                <button
+                  id="export-button"
+                  class="button button-secondary button-small"
+                  type="button"
+                >
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#download"></use>
+                  </svg>
+                  Exportar CSV
+                </button>
+              </div>
+
+              <div class="statement-toolbar">
+                <div class="search-input">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#search"></use>
+                  </svg>
+
+                  <label for="statement-search" class="sr-only">
+                    Buscar nos lançamentos carregados
+                  </label>
+
+                  <input
+                    id="statement-search"
+                    class="input"
+                    type="search"
+                    placeholder="Buscar movimentação ou conta"
+                    autocomplete="off"
+                  >
+                </div>
+
+                <div class="filter-input">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#filter"></use>
+                  </svg>
+
+                  <label for="statement-filter" class="sr-only">
+                    Filtrar tipo de movimentação
+                  </label>
+
+                  <select id="statement-filter" class="input">
+                    <option value="all">Todos os tipos</option>
+                    <option value="deposit">Depósitos</option>
+                    <option value="withdrawal">Saques</option>
+                    <option value="transfer">Transferências</option>
+                  </select>
+
+                  <svg class="icon select-chevron" aria-hidden="true">
+                    <use href="/assets/icons.svg#chevron-down"></use>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="table-scroll">
+                <table class="transactions-table statement-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Movimentação</th>
+                      <th scope="col">Data</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Valor</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="statement-body"></tbody>
+                </table>
+              </div>
+
+              <div id="statement-empty" class="empty-state" hidden>
+                <span class="empty-icon">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="/assets/icons.svg#search"></use>
+                  </svg>
+                </span>
+
+                <h3>Nenhuma movimentação por aqui.</h3>
+                <p>Experimente outro filtro ou carregue mais lançamentos.</p>
+              </div>
+
+              <div class="statement-footer">
+                <p id="statement-count">Carregando lançamentos…</p>
+
+                <button
+                  id="load-more-button"
+                  class="button button-secondary button-small"
+                  type="button"
+                >
+                  Carregar mais
+                </button>
+              </div>
+            </section>
+
+            <p class="section-footnote">
+              A busca, os filtros e a exportação consideram
+              os lançamentos carregados na tela.
+            </p>
+          </section>
+
+          <!-- CONTAS -->
+          <section id="accounts-view" aria-label="Minhas contas" hidden>
+            <div class="accounts-heading">
+              <div>
+                <h2>Espaço para cada plano.</h2>
+                <p>Escolha uma conta para acompanhar ou abra uma nova.</p>
+              </div>
+
+              <button
+                id="new-account-button"
+                class="button button-primary"
+                type="button"
+              >
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#plus"></use>
+                </svg>
+                Abrir nova conta
+              </button>
+            </div>
+
+            <div id="account-grid" class="account-grid"></div>
+
+            <div class="accounts-tip">
+              <span class="accounts-tip-icon">
+                <svg class="icon" aria-hidden="true">
+                  <use href="/assets/icons.svg#bank"></use>
+                </svg>
+              </span>
+
+              <div>
+                <h3>Receber começa com seu número.</h3>
+
+                <p>
+                  Compartilhe o número de uma das suas contas para receber
+                  transferências internas. Você também pode movimentar valores
+                  entre suas próprias contas.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- COTAÇÕES REAIS — INFORMATIVO, SEM EXECUÇÃO -->
+          <section id="investments-view" aria-label="Investimentos e mercado" hidden>
+            <div class="investment-intro">
+              <div>
+                <span class="eyebrow">MERCADO BRASILEIRO</span>
+                <h2>Explore investimentos reais.</h2>
+                <p>Preços de mercado de empresas listadas na B3, consultados pela API brapi.
+                   A Pulso permanece um ambiente de simulação: nenhuma compra ou venda é realizada.</p>
+              </div>
+              <button id="investment-refresh" type="button" class="button button-secondary button-small">
+                Atualizar cotações
+              </button>
+            </div>
+            <p id="investment-status" class="investment-status" role="status">Abra a aba para consultar as cotações.</p>
+            <div id="investment-grid" class="investment-grid"></div>
+            <div class="investment-disclaimer">
+              <strong>Dados de mercado, não uma recomendação.</strong>
+              <p>Cotações podem ter atraso, variar ao longo do pregão ou ficar temporariamente indisponíveis.
+                 Sua conta fictícia, seu saldo e seu extrato não são afetados.</p>
+              <a href="https://brapi.dev/" target="_blank" rel="noopener noreferrer">Conhecer a fonte: brapi.dev</a>
+            </div>
+          </section>
+
+          <footer class="workspace-footer">
+            <span>
+              pulso.
+              <span class="footer-divider">/</span>
+              sua conta, em movimento
+            </span>
+
+            <span>
+              Dados fictícios. Possibilidades reais de aprender.
+            </span>
+          </footer>
+        </main>
+      </div>
+    </div>
+
+    <!-- JANELA DE MOVIMENTAÇÕES E COMPROVANTES -->
+    <dialog
+      id="action-dialog"
+      class="action-dialog"
+      aria-labelledby="dialog-title"
+    >
+      <div class="dialog-heading">
+        <div class="dialog-brand">
+          <span class="dialog-brand-mark">
+            <svg class="icon" aria-hidden="true">
+              <use href="/assets/icons.svg#logo"></use>
+            </svg>
+          </span>
+
+          <h2 id="dialog-title">Sua movimentação</h2>
+        </div>
+
+        <button
+          id="dialog-close"
+          class="icon-button"
+          type="button"
+          aria-label="Fechar"
+        >
+          <svg class="icon" aria-hidden="true">
+            <use href="/assets/icons.svg#close"></use>
+          </svg>
+        </button>
+      </div>
+
+      <div id="dialog-content" class="dialog-content"></div>
+    </dialog>
+
+    <div
+      id="toast-region"
+      class="toast-region"
+      aria-live="polite"
+      aria-atomic="false"
+    ></div>
+
+    <noscript>
+      <div class="noscript-message">
+        Ative o JavaScript do navegador para usar sua conta digital.
+      </div>
+    </noscript>
+  </body>
+</html>

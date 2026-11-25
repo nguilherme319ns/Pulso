@@ -1,0 +1,9 @@
+{
+  "health": {
+    "status": "ok"
+  },
+  "ready": {
+    "status": "ready",
+    "database": "up"
+  }
+}

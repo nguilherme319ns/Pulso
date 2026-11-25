@@ -1,0 +1,81 @@
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-conta_digital}
+      MYSQL_USER: ${DB_USER:-conta_app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Execute npm run env:init primeiro}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Execute npm run env:init primeiro}
+      TZ: UTC
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_PASSWORD\" mysql --protocol=TCP -h 127.0.0.1 -u \"$$MYSQL_USER\" \"$$MYSQL_DATABASE\" -N -e 'SELECT 1 FROM accounts LIMIT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  api:
+    build: .
+    init: true
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+    ports:
+      - "127.0.0.1:${PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/ready').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Banco isolado para testes. Não usa o volume mysql_data nem publica portas.
+  db-test:
+    image: mysql:8.4
+    profiles: [test]
+    environment:
+      MYSQL_DATABASE: conta_digital_test
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Execute npm run env:init primeiro}
+      MYSQL_ROOT_HOST: "%"
+      TZ: UTC
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_ROOT_PASSWORD\" mysql --protocol=TCP -h 127.0.0.1 -u root -N -e 'SELECT 1' >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  tests:
+    build: .
+    profiles: [test]
+    init: true
+    env_file: .env
+    environment:
+      NODE_ENV: test
+      DB_HOST: db-test
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Execute npm run env:init primeiro}
+      DB_NAME: conta_digital
+      TEST_DB_NAME: conta_digital_test
+    depends_on:
+      db-test:
+        condition: service_healthy
+    command: ["node", "scripts/test.js"]
+
+volumes:
+  mysql_data:

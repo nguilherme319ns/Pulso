@@ -1,0 +1,648 @@
+{
+  "info": {
+    "name": "API Conta Digital — fluxo e idempotência",
+    "description": "Projeto de estudo com dados fictícios. Execute as etapas na ordem. A coleção mantém chaves por intenção, para demonstrar replay sem duplicação. Para repetir todo o fluxo com novos clientes, limpe as variáveis geradas (preserve base_url). Senhas e tokens ficam apenas nas variáveis da sua coleção; não exporte valores reais. Rotas de dinheiro usam centavos inteiros. Não integra Pix real.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bruno_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ana_email",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bruno_email",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "demo_password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ana_account_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bruno_account_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deposit_key",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transfer_key",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "withdrawal_key",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "last_transfer_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "statement_cursor",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 — Saúde HTTP",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/health",
+        "description": "",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 — Prontidão do banco",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/ready",
+        "description": "",
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 — Cadastrar Ana",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/auth/register",
+        "description": "Cria Ana e sua primeira conta. Os dados gerados ficam nas variáveis da coleção. Reenviar o mesmo cadastro retorna 409; para criar outra pessoa, limpe ana_email.",
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Ana Exemplo\",\n  \"email\": \"{{ana_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.collectionVariables.get('ana_email')) pm.collectionVariables.set('ana_email', 'ana.' + pm.variables.replaceIn('{{$guid}}') + '@example.test');",
+              "if (!pm.collectionVariables.get('demo_password')) pm.collectionVariables.set('demo_password', pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "if (pm.response.code === 201) { const body = pm.response.json(); pm.collectionVariables.set('token', body.token); pm.collectionVariables.set('ana_account_id', body.account.id); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 — Cadastrar Bruno",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/auth/register",
+        "description": "",
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Bruno Exemplo\",\n  \"email\": \"{{bruno_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.collectionVariables.get('bruno_email')) pm.collectionVariables.set('bruno_email', 'bruno.' + pm.variables.replaceIn('{{$guid}}') + '@example.test');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "if (pm.response.code === 201) { const body = pm.response.json(); pm.collectionVariables.set('bruno_token', body.token); pm.collectionVariables.set('bruno_account_id', body.account.id); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 — Login de Ana",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/auth/login",
+        "description": "",
+        "auth": {
+          "type": "noauth"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{ana_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) pm.collectionVariables.set('token', pm.response.json().token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 — Depositar R$ 100,00",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "{{deposit_key}}"
+          }
+        ],
+        "url": "{{base_url}}/accounts/{{ana_account_id}}/deposits",
+        "description": "A chave permanece em deposit_key. Repetir Send devolve o depósito original; para novo depósito, limpe deposit_key.",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"amount_cents\": 10000 }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.collectionVariables.get('deposit_key')) pm.collectionVariables.set('deposit_key', pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Movimentação criada ou repetida', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 — Transferir R$ 25,00 de Ana para Bruno",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "{{transfer_key}}"
+          }
+        ],
+        "url": "{{base_url}}/transfers",
+        "description": "A chave permanece em transfer_key. A resposta mostra só o lançamento de Ana; o crédito do destino aparece no extrato de Bruno.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"from_account_id\": {{ana_account_id}},\n  \"to_account_id\": {{bruno_account_id}},\n  \"amount_cents\": 2500\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.collectionVariables.get('transfer_key')) pm.collectionVariables.set('transfer_key', pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Movimentação criada ou repetida', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));",
+              "if ([200, 201].includes(pm.response.code)) pm.collectionVariables.set('last_transfer_id', pm.response.json().operation.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 — Repetir a mesma transferência",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "{{transfer_key}}"
+          }
+        ],
+        "url": "{{base_url}}/transfers",
+        "description": "Execute depois da etapa 06. Usa exatamente a mesma chave e corpo, sem novo débito.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"from_account_id\": {{ana_account_id}},\n  \"to_account_id\": {{bruno_account_id}},\n  \"amount_cents\": 2500\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.collectionVariables.get('transfer_key')) pm.collectionVariables.set('transfer_key', pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Replay da operação original', () => { const body = pm.response.json(); pm.expect(body.replayed).to.equal(true); pm.expect(body.operation.id).to.equal(pm.collectionVariables.get('last_transfer_id')); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 — Reusar chave com outro valor (erro esperado)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "{{transfer_key}}"
+          }
+        ],
+        "url": "{{base_url}}/transfers",
+        "description": "Execute após a etapa 06. Alterar o valor não transforma uma repetição em outra operação.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"from_account_id\": {{ana_account_id}},\n  \"to_account_id\": {{bruno_account_id}},\n  \"amount_cents\": 2600\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.collectionVariables.get('transfer_key')) pm.collectionVariables.set('transfer_key', pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422: chave reaproveitada', () => { pm.response.to.have.status(422); pm.expect(pm.response.json().error.code).to.equal('IDEMPOTENCY_KEY_REUSED'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 — Sacar R$ 10,00",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "{{withdrawal_key}}"
+          }
+        ],
+        "url": "{{base_url}}/accounts/{{ana_account_id}}/withdrawals",
+        "description": "Mantém withdrawal_key para permitir repetir o saque com segurança.",
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"amount_cents\": 1000 }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (!pm.collectionVariables.get('withdrawal_key')) pm.collectionVariables.set('withdrawal_key', pm.variables.replaceIn('{{$guid}}'));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Movimentação criada ou repetida', () => pm.expect(pm.response.code).to.be.oneOf([200, 201]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 — Conferir saldo de Ana",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/accounts/{{ana_account_id}}",
+        "description": "No fluxo descrito, o saldo final de Ana é R$ 65,00."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Saldo final de 6500 centavos', () => pm.expect(pm.response.json().account.balance_cents).to.equal(6500));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 — Extrato de Ana, primeira página",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/accounts/{{ana_account_id}}/statement?limit=2",
+        "description": ""
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.code === 200) pm.collectionVariables.set('statement_cursor', pm.response.json().pagination.next_cursor || '');"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 — Extrato de Ana, próxima página",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/accounts/{{ana_account_id}}/statement?limit=2&before={{statement_cursor}}",
+        "description": "Execute apenas se a etapa 11 retornar has_more=true e next_cursor preenchido."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 — Extrato de Bruno",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/accounts/{{bruno_account_id}}/statement?limit=20",
+        "description": "Autentica como Bruno para mostrar seu crédito. Ana não pode consultar esta conta.",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{bruno_token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 — Abrir outra conta de Ana",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/accounts",
+        "description": "",
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 — Listar contas de Ana",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/accounts",
+        "description": ""
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

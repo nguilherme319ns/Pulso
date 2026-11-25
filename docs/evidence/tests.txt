@@ -1,0 +1,63 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> api-conta-digital@1.1.0 test
+> node scripts/test.js
+
+Testes com MySQL habilitados; banco separado: conta_digital_test.
+Uma falha de conexão com MySQL reprova a execução; integração não será ignorada.
+▶ Proteção do banco de testes
+  ✔ recusa nomes comuns e o mesmo banco configurado para a aplicação (1.019858ms)
+✔ Proteção do banco de testes (2.010272ms)
+▶ API + MySQL real: consistência financeira
+  ✔ responde ao healthcheck com conexão SQL disponível (27.659465ms)
+  ✔ cadastra cliente e conta, armazena somente hash e autentica (1507.835338ms)
+  ✔ exige JWT e não expõe nem movimenta contas de outro cliente (616.221785ms)
+  ✔ rejeita valores inválidos, inclusive fora da precisão inteira do JSON (309.474984ms)
+  ✔ exige chave de idempotência válida nas três movimentações (612.107753ms)
+  ✔ deposita e saca centavos exatos, com saldos históricos no ledger (308.117928ms)
+  ✔ transfere em uma única operação com duas contrapartidas de mesmo valor (626.273887ms)
+  ✔ saldo insuficiente não grava débito, operação nem chave de idempotência (616.614081ms)
+  ✔ recusa auto-transferência e destino inexistente sem modificar a origem (305.299882ms)
+  ✔ protege o limite inteiro exato e reverte transferência para destino cheio (607.257001ms)
+  ✔ depósitos simultâneos com a mesma chave creditam uma única vez (344.15672ms)
+  ✔ saques simultâneos com a mesma chave debitam uma única vez (319.047467ms)
+  ✔ transferências simultâneas idempotentes movem dinheiro uma única vez (632.486047ms)
+  ✔ a mesma chave com dados diferentes falha, inclusive entre tipos e destinos (915.103248ms)
+  ✔ uma segunda instância da API recupera a operação original do banco (615.896689ms)
+  ✔ concorrência entre saques e transferências não permite gastar o mesmo saldo (648.169299ms)
+  ✔ transferências cruzadas concorrentes conservam o total e concluem sem erro (736.534016ms)
+  ✔ extrato usa cursor exclusivo e não duplica linhas se houver novo depósito entre páginas (322.718016ms)
+  ✔ ordena o extrato por id mesmo quando vários lançamentos têm o mesmo instante (307.774184ms)
+[api-error] ER_SIGNAL_EXCEPTION
+  ✔ falha SQL no crédito reverte débito, crédito, operação, ledger e chave (608.165404ms)
+  ✔ banco impede edição/remoção do ledger e das operações e saldo fora dos limites (299.506842ms)
+  ✔ concilia o saldo de todas as contas criadas pela suíte com seus lançamentos (6.162671ms)
+✔ API + MySQL real: consistência financeira (11487.594129ms)
+✔ a transação só devolve resultado depois de commit e libera a conexão (1.67748ms)
+✔ falha depois de uma escrita provoca rollback antes da liberação (0.483425ms)
+✔ ER_LOCK_DEADLOCK: desfaz toda a transação e só então repete em outra conexão (0.269258ms)
+✔ ER_LOCK_WAIT_TIMEOUT: desfaz toda a transação e só então repete em outra conexão (0.167107ms)
+✔ as tentativas de deadlock são limitadas (0.386081ms)
+✔ commit com falha de rede não repete uma operação com resultado desconhecido (0.221738ms)
+✔ falha no rollback descarta a conexão e impede retry automático (0.312502ms)
+✔ nomes de banco são validados antes de interpolar identificadores SQL (0.389195ms)
+✔ servidores que ignoram CHECK são rejeitados (0.45271ms)
+▶ Inteiros exatos e contrato de entrada
+  ✔ converte centavos válidos para BigInt sem arredondamento (0.891298ms)
+  ✔ recusa coerção, frações, zero, negativos e números sem precisão (0.366843ms)
+  ✔ detecta tokens fracionários que JSON.parse arredondaria silenciosamente (0.356027ms)
+  ✔ valida IDs estritamente e mantém cursores BIGINT como strings (0.969503ms)
+  ✔ mantém chaves case-sensitive e rejeita espaços/valores ambíguos (0.260325ms)
+  ✔ vincula o fingerprint ao tipo, contas e valor exatos (0.471548ms)
+  ✔ normaliza email e impede truncamento silencioso de senha no bcrypt (0.400572ms)
+  ✔ não permite estruturas de corpo ou campos extras inesperados (0.320744ms)
+  ✔ falha cedo em segredo curto, porta ou duração de token inválidos (0.538557ms)
+✔ Inteiros exatos e contrato de entrada (5.908546ms)
+ℹ tests 41
+ℹ suites 3
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11574.510271

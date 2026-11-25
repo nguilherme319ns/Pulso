@@ -1,0 +1,16 @@
+{
+  "mysql": "offline",
+  "health": {
+    "http": 200,
+    "body": {
+      "status": "ok"
+    }
+  },
+  "ready": {
+    "http": 503,
+    "body": {
+      "status": "not_ready",
+      "database": "unavailable_or_schema_missing"
+    }
+  }
+}

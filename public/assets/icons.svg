@@ -1,0 +1,152 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <!-- Marca Pulso -->
+  <symbol id="logo" viewBox="0 0 24 24">
+    <path d="M3 13h4l3-7 4 13 3-8h4" stroke-width="2.7"/>
+  </symbol>
+
+  <!-- Início -->
+  <symbol id="home" viewBox="0 0 24 24">
+    <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>
+  </symbol>
+
+  <!-- Transferência -->
+  <symbol id="transfer" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="7" height="7" rx="2"/>
+    <rect x="14" y="14" width="7" height="7" rx="2"/>
+    <path d="M14 6h4a2 2 0 0 1 2 2v2M10 18H6a2 2 0 0 1-2-2v-2"/>
+  </symbol>
+
+  <!-- Adicionar -->
+  <symbol id="plus" viewBox="0 0 24 24">
+    <path d="M12 5v14M5 12h14"/>
+  </symbol>
+
+  <!-- Retirar -->
+  <symbol id="minus" viewBox="0 0 24 24">
+    <path d="M5 12h14"/>
+  </symbol>
+
+  <!-- Histórico -->
+  <symbol id="history" viewBox="0 0 24 24">
+    <path d="M4 11a8 8 0 1 1 2 6M4 4v7h7M12 7v5l3 2"/>
+  </symbol>
+
+  <!-- Carteira -->
+  <symbol id="wallet" viewBox="0 0 24 24">
+    <path d="M20 8V5a2 2 0 0 0-2-2H6a3 3 0 0 0 0 6h14a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6"/>
+    <path d="M21 12h-5a2 2 0 0 0 0 4h5"/>
+    <circle cx="16" cy="14" r=".5" fill="currentColor" stroke="none"/>
+  </symbol>
+
+  <!-- Mostrar valores -->
+  <symbol id="eye" viewBox="0 0 24 24">
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </symbol>
+
+  <!-- Ocultar valores -->
+  <symbol id="eye-off" viewBox="0 0 24 24">
+    <path d="m3 3 18 18M10.6 5.1 12 5c6.5 0 10 7 10 7a21 21 0 0 1-3 3.8M6.4 6.4A23 23 0 0 0 2 12s3.5 7 10 7a11 11 0 0 0 5.6-1.6M10 10a3 3 0 0 0 4 4"/>
+  </symbol>
+
+  <!-- Copiar -->
+  <symbol id="copy" viewBox="0 0 24 24">
+    <rect x="8" y="8" width="13" height="13" rx="2"/>
+    <path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>
+  </symbol>
+
+  <!-- Sair -->
+  <symbol id="logout" viewBox="0 0 24 24">
+    <path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M15 8l4 4-4 4M8 12h11"/>
+  </symbol>
+
+  <!-- Atualizar -->
+  <symbol id="refresh" viewBox="0 0 24 24">
+    <path d="M20 11a8 8 0 0 0-13.7-5L3 9M3 3v6h6M4 13a8 8 0 0 0 13.7 5L21 15M15 15h6v6"/>
+  </symbol>
+
+  <!-- Buscar -->
+  <symbol id="search" viewBox="0 0 24 24">
+    <circle cx="10.5" cy="10.5" r="6.5"/>
+    <path d="m16 16 5 5"/>
+  </symbol>
+
+  <!-- Filtrar -->
+  <symbol id="filter" viewBox="0 0 24 24">
+    <path d="M4 7h16M7 12h10M10 17h4"/>
+    <circle cx="8" cy="7" r="2" fill="currentColor" stroke="none"/>
+    <circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/>
+  </symbol>
+
+  <!-- Baixar -->
+  <symbol id="download" viewBox="0 0 24 24">
+    <path d="M12 3v12m-4-4 4 4 4-4M4 16v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/>
+  </symbol>
+
+  <!-- Confirmação -->
+  <symbol id="check" viewBox="0 0 24 24">
+    <path d="m5 12 4 4L19 6"/>
+  </symbol>
+
+  <!-- Fechar -->
+  <symbol id="close" viewBox="0 0 24 24">
+    <path d="m6 6 12 12M6 18 18 6"/>
+  </symbol>
+
+  <!-- Usuário -->
+  <symbol id="user" viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="4"/>
+    <path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/>
+  </symbol>
+
+  <!-- Segurança -->
+  <symbol id="shield" viewBox="0 0 24 24">
+    <path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/>
+    <path d="m8 12 3 3 5-6"/>
+  </symbol>
+
+  <!-- Comprovante -->
+  <symbol id="receipt" viewBox="0 0 24 24">
+    <path d="M5 3h14v18l-3-2-4 2-4-2-3 2ZM8 7h8M8 11h8M8 15h4"/>
+  </symbol>
+
+  <!-- Seta para baixo -->
+  <symbol id="chevron-down" viewBox="0 0 24 24">
+    <path d="m6 9 6 6 6-6"/>
+  </symbol>
+
+  <!-- Conta -->
+  <symbol id="bank" viewBox="0 0 24 24">
+    <path d="m3 8 9-5 9 5v2H3ZM5 13v5M10 13v5M14 13v5M19 13v5M3 21h18"/>
+  </symbol>
+
+  <!-- Demonstração -->
+  <symbol id="sparkles" viewBox="0 0 24 24">
+    <path d="m12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4ZM20 2v4M18 4h4"/>
+  </symbol>
+
+  <!-- E-mail -->
+  <symbol id="mail" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="14" rx="2"/>
+    <path d="m3 7 9 6 9-6"/>
+  </symbol>
+
+  <!-- Cadeado -->
+  <symbol id="lock" viewBox="0 0 24 24">
+    <rect x="5" y="10" width="14" height="11" rx="2"/>
+    <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>
+  </symbol>
+
+  <!-- Calendário -->
+  <symbol id="calendar" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="16" rx="2"/>
+    <path d="M7 3v4M17 3v4M3 11h18M7 15h2M15 15h2M7 18h2"/>
+  </symbol>
+</svg>

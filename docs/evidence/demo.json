@@ -1,0 +1,58 @@
+{
+  "descricao": "Demonstração concluída com dados fictícios.",
+  "contas": {
+    "ana": 1,
+    "bruno": 2
+  },
+  "deposito_cents": 10000,
+  "transferencia_cents": 2500,
+  "primeira_transferencia_http": 201,
+  "repeticao_http": 200,
+  "mesma_operacao": true,
+  "saque_cents": 1000,
+  "saldo_ana_cents": 6500,
+  "saldo_bruno_cents": 2500,
+  "extrato_ana": {
+    "account_id": 1,
+    "entries": [
+      {
+        "id": "4",
+        "operation_id": "0db6272b-5d7c-4d5d-ba7a-0f37ad537cfe",
+        "account_id": 1,
+        "direction": "debit",
+        "amount_cents": 1000,
+        "balance_after_cents": 6500,
+        "created_at": "2026-11-25T19:29:04.190654Z",
+        "type": "withdrawal",
+        "counterparty_account_id": null
+      },
+      {
+        "id": "2",
+        "operation_id": "640704e4-21fe-4565-8e6a-d2fa25b5aea0",
+        "account_id": 1,
+        "direction": "debit",
+        "amount_cents": 2500,
+        "balance_after_cents": 7500,
+        "created_at": "2026-11-25T19:29:04.181749Z",
+        "type": "transfer",
+        "counterparty_account_id": 2
+      },
+      {
+        "id": "1",
+        "operation_id": "f161d04f-eeed-4c3e-b714-c8e34fc7891e",
+        "account_id": 1,
+        "direction": "credit",
+        "amount_cents": 10000,
+        "balance_after_cents": 10000,
+        "created_at": "2026-11-25T19:29:04.173978Z",
+        "type": "deposit",
+        "counterparty_account_id": null
+      }
+    ],
+    "pagination": {
+      "limit": 10,
+      "next_cursor": null,
+      "has_more": false
+    }
+  }
+}
