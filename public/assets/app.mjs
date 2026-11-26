@@ -10,6 +10,9 @@ const $ = (id) => document.getElementById(id);
 
 const state = {
   customer: null,
+  demo: false,
+  demoEntries: new Map(),
+  demoNextEntry: 1,
   accounts: [],
   currentAccount: null,
   entries: [],
@@ -34,6 +37,10 @@ function showMessage(message, error = false) {
   toast.className = error ? "toast toast-error" : "toast toast-success";
   toast.textContent = message;
 
+  // Evita avisos idênticos empilhados por cliques consecutivos.
+  region.querySelectorAll(".toast").forEach(item => {
+    if (item.textContent === message) item.remove();
+  });
   region.appendChild(toast);
 
   setTimeout(() => toast.remove(), 4500);
@@ -108,6 +115,7 @@ async function handleAuth(event) {
   const email = $("auth-email").value.trim();
   const password = $("auth-password").value;
 
+  state.demo = false;
   state.busy = true;
   $("auth-submit").disabled = true;
   $("auth-message").hidden = true;
@@ -201,11 +209,17 @@ async function loadAccounts() {
 
 
 async function loadCurrentAccount() {
-  if (state.demo) {
-  renderDashboard();
-  return;
-}
   if (!state.currentAccount) return;
+  if (state.demo) {
+    state.entries = [...(state.demoEntries.get(String(state.currentAccount.id)) || [])];
+    state.statementVersion++;
+    state.statementHasMore = false;
+    state.statementCursor = null;
+    state.statementLoading = false;
+    renderDashboard();
+    if (state.currentView === "accounts") renderAccounts();
+    return;
+  }
 
   const accountId = state.currentAccount.id;
 
@@ -480,6 +494,7 @@ function updateLoadMoreButton() {
 }
 
 async function loadMoreStatement() {
+  if (state.demo) return;
   if (
     !state.currentAccount ||
     !state.statementHasMore ||
@@ -970,6 +985,7 @@ function renderBalanceChart() {
 let creatingAccount = false;
 
 async function openNewAccount() {
+  if (state.demo) return createDemoAccount();
   if (creatingAccount) return;
 
   const dialog = $("action-dialog");
@@ -1285,6 +1301,9 @@ function showView(view) {
   };
 
   $("page-title").textContent = titles[view];
+  $("page-subtitle").textContent = state.demo
+    ? "Explore a Pulso com dados fictícios, sem MySQL."
+    : "Seu dinheiro, visto com clareza.";
 
   document.querySelectorAll("[data-view]").forEach(button => {
     const active = button.dataset.view === view;
@@ -1346,18 +1365,12 @@ async function selectAccount(id) {
 }
 
 function logout() {
-  state.demo = false;
-
-document.querySelectorAll(
-  '[data-action="deposit"], ' +
-  '[data-action="withdrawal"], ' +
-  '[data-action="transfer"]'
-).forEach(button => {
-  button.disabled = false;
-});
-
-$("new-account-button").disabled = false;
   api.logout();
+  state.demo = false;
+  state.demoEntries.clear();
+  state.demoNextEntry = 1;
+  $("pending-banner").hidden = true;
+  $("demo-mode-banner")?.remove();
 
   state.customer = null;
   state.accounts = [];
@@ -1374,6 +1387,18 @@ $("statement-filter").value = "all";
   $("app-view").hidden = true;
   $("auth-view").hidden = false;
   $("auth-password").value = "";
+  $("page-subtitle").textContent = "Seu dinheiro, visto com clareza.";
+  api.checkDatabase().then(() => {
+    document.querySelectorAll("[data-health-status]").forEach(element => {
+      element.textContent = "Sistema conectado";
+      element.dataset.status = "up";
+    });
+  }).catch(() => {
+    document.querySelectorAll("[data-health-status]").forEach(element => {
+      element.textContent = "Banco indisponível";
+      element.dataset.status = "down";
+    });
+  });
 
   showMessage("Você saiu da sua conta.");
 }
@@ -1382,6 +1407,7 @@ const pendingDeposits = new Map();
 
 // Abre uma janela de depósito.
 function openDeposit() {
+  if (state.demo) return openDemoMovement("deposit");
   if (!state.currentAccount) {
     showMessage("Selecione uma conta primeiro.", true);
     return;
@@ -1538,6 +1564,7 @@ function reviewDeposit(accountId, amountCents) {
 let pendingTransfer = null;
 
 function openTransfer() {
+  if (state.demo) return openDemoMovement("transfer");
   if (!state.currentAccount) {
     showMessage("Selecione uma conta primeiro.", true);
     return;
@@ -1884,6 +1911,7 @@ async function submitTransfer(operation, confirm, back) {
 let pendingWithdrawal = null;
 
 function openWithdrawal() {
+  if (state.demo) return openDemoMovement("withdrawal");
   if (!state.currentAccount) {
     showMessage("Selecione uma conta primeiro.", true);
     return;
@@ -2123,77 +2151,227 @@ async function submitWithdrawal(operation) {
     content.append(warning, retry);
   }
 }
-// INICIAR O SITE
 
+// ==========================================
+// DEMONSTRAÇÃO OFFLINE — SEM AUTENTICAÇÃO OU MYSQL
+// ==========================================
+// Os dados são descartados ao sair ou recarregar a página.
+// Nenhuma ação deste modo chama endpoints financeiros.
 
-function openDemo() {
+function demoSetStatus() {
+  document.querySelectorAll("[data-health-status]").forEach(element => {
+    element.textContent = "Demonstração · sem MySQL";
+    element.dataset.status = "up";
+  });
+}
+
+function demoAddEntry(accountId, type, direction, amount, otherId = null) {
+  const account = state.accounts.find(a => String(a.id) === String(accountId));
+  if (!account) throw new Error("Conta de demonstração não encontrada.");
+  const entry = {
+    id: state.demoNextEntry++,
+    type,
+    direction,
+    amount_cents: String(amount),
+    balance_after_cents: String(account.balance_cents),
+    account_id: account.id,
+    counterparty_account_id: otherId,
+    operation_id: `DEMO-${state.demoNextEntry}`,
+    created_at: new Date().toISOString()
+  };
+  const entries = state.demoEntries.get(String(accountId)) || [];
+  entries.unshift(entry);
+  state.demoEntries.set(String(accountId), entries);
+}
+
+function demoUpdateAccountSelector() {
+  const selector = $("account-selector");
+  selector.replaceChildren();
+  for (const account of state.accounts) {
+    const option = document.createElement("option");
+    option.value = String(account.id);
+    option.textContent = `Conta ${String(account.id).padStart(6, "0")}`;
+    selector.appendChild(option);
+  }
+  if (state.currentAccount) selector.value = String(state.currentAccount.id);
+}
+
+function demoBanner() {
+  const old = $("demo-mode-banner");
+  if (old) old.remove();
+  const banner = document.createElement("section");
+  banner.id = "demo-mode-banner";
+  banner.className = "notice pulso-demo-banner";
+  banner.textContent = "MODO DEMONSTRAÇÃO · Dados fictícios, sem MySQL. Depósitos, saques e transferências não movimentam dinheiro real.";
+  $("pending-banner").insertAdjacentElement("afterend", banner);
+}
+
+async function enterDemo() {
+  if (state.busy) return;
+  api.logout();
   state.demo = true;
-
-  state.customer = {
-    name: "Visitante Pulso",
-    email: "demo@pulso.local"
-  };
-
-  const account = {
-    id: 100001,
-    balance_cents: "875450"
-  };
-
-  state.accounts = [account];
-  state.currentAccount = account;
-
-  const now = Date.now();
-
-  const transactions = [
-    ["deposit", "credit", 500000, 500000],
-    ["deposit", "credit", 350000, 850000],
-    ["withdrawal", "debit", 7500, 842500],
-    ["deposit", "credit", 65000, 907500],
-    ["transfer", "debit", 32050, 875450]
+  state.demoNextEntry = 1;
+  state.demoEntries.clear();
+  state.accounts = [
+    { id: 900001, balance_cents: "500000" },
+    { id: 900002, balance_cents: "120000" }
   ];
-
-  state.entries = transactions.map((item, index) => ({
-    id: index + 1,
-    type: item[0],
-    direction: item[1],
-    amount_cents: String(item[2]),
-    balance_after_cents: String(item[3]),
-    created_at: new Date(
-      now - (4 - index) * 86400000
-    ).toISOString()
-  })).reverse();
-
+  state.currentAccount = state.accounts[0];
+  state.customer = { name: "Visitante (demonstração)", email: "Sem cadastro necessário" };
+  demoAddEntry(900001, "deposit", "credit", 500000);
+  demoAddEntry(900002, "deposit", "credit", 120000);
   state.statementCursor = null;
   state.statementHasMore = false;
-
+  state.statementLoading = false;
   $("auth-view").hidden = true;
   $("app-view").hidden = false;
-
   $("customer-name").textContent = state.customer.name;
   $("customer-email").textContent = state.customer.email;
-  $("customer-initials").textContent = "V";
+  $("customer-initials").textContent = "D";
   $("account-owner").textContent = state.customer.name;
-
-  $("account-selector").replaceChildren(
-    new Option("Conta 100001", "100001")
-  );
-
-  // Operações reais ficam indisponíveis na demonstração.
-  document.querySelectorAll(
-    '[data-action="deposit"], ' +
-    '[data-action="withdrawal"], ' +
-    '[data-action="transfer"]'
-  ).forEach(button => {
-    button.disabled = true;
-  });
-
-  $("new-account-button").disabled = true;
-
+  demoUpdateAccountSelector();
+  demoBanner();
+  demoSetStatus();
   showView("overview");
-  renderDashboard();
-
-  showMessage("Bem-vindo à demonstração da Pulso!");
+  await loadCurrentAccount();
+  showMessage("Demonstração iniciada: sem cadastro e sem banco de dados.");
 }
+
+function createDemoAccount() {
+  const highest = Math.max(...state.accounts.map(a => Number(a.id)));
+  const account = { id: highest + 1, balance_cents: "0" };
+  state.accounts.push(account);
+  state.currentAccount = account;
+  demoUpdateAccountSelector();
+  loadCurrentAccount();
+  showView("accounts");
+  showMessage("Conta fictícia criada somente nesta demonstração.");
+}
+
+function openDemoMovement(kind) {
+  const labels = {
+    deposit: "Adicionar saldo fictício",
+    withdrawal: "Saque fictício",
+    transfer: "Transferência fictícia"
+  };
+  const dialog = $("action-dialog");
+  const content = $("dialog-content");
+  const sourceId = String(state.currentAccount.id);
+  $("dialog-title").textContent = labels[kind];
+  content.replaceChildren();
+
+  const form = document.createElement("form");
+  form.className = "form-stack";
+  const info = document.createElement("p");
+  info.className = "modal-copy";
+  info.textContent = "Simulação local: nenhuma operação será enviada ao servidor ou registrada no MySQL.";
+  form.appendChild(info);
+
+  let destination = null;
+  if (kind === "transfer") {
+    const destinationLabel = document.createElement("label");
+    destinationLabel.className = "field-label";
+    destinationLabel.htmlFor = "demo-destination";
+    destinationLabel.textContent = "Conta fictícia de destino";
+    destination = document.createElement("select");
+    destination.className = "input";
+    destination.id = "demo-destination";
+    for (const account of state.accounts.filter(a => String(a.id) !== sourceId)) {
+      const option = document.createElement("option");
+      option.value = String(account.id);
+      option.textContent = `Conta ${String(account.id).padStart(6, "0")}`;
+      destination.appendChild(option);
+    }
+    if (!destination.options.length) {
+      showMessage("Crie outra conta fictícia para transferir.", true);
+      return;
+    }
+    form.append(destinationLabel, destination);
+  }
+
+  const label = document.createElement("label");
+  label.className = "field-label";
+  label.htmlFor = "demo-amount";
+  label.textContent = "Valor (R$)";
+  const input = document.createElement("input");
+  input.className = "input";
+  input.id = "demo-amount";
+  input.placeholder = "Exemplo: 50,00";
+  input.inputMode = "decimal";
+  input.required = true;
+  input.autocomplete = "off";
+  const review = document.createElement("button");
+  review.className = "button button-primary";
+  review.type = "submit";
+  review.textContent = "Revisar simulação";
+  form.append(label, input, review);
+  content.appendChild(form);
+
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    try {
+      const amount = BigInt(parseMoney(input.value));
+      if (amount <= 0n || amount > 100000000n) {
+        throw new Error("Informe um valor entre R$ 0,01 e R$ 1.000.000,00.");
+      }
+      const from = state.accounts.find(a => String(a.id) === sourceId);
+      if (!from) throw new Error("Conta fictícia indisponível.");
+      if (kind !== "deposit" && amount > BigInt(from.balance_cents)) {
+        throw new Error("Saldo fictício insuficiente.");
+      }
+      const targetId = destination?.value;
+      const target = targetId ? state.accounts.find(a => String(a.id) === targetId) : null;
+      if (kind === "transfer" && !target) throw new Error("Conta de destino inválida.");
+
+      content.replaceChildren();
+      const summary = document.createElement("p");
+      summary.className = "review-heading";
+      summary.textContent = `${labels[kind]}: ${formatMoney(amount)}` +
+        (target ? ` · destino: conta ${target.id}` : "") + ".";
+      const notice = document.createElement("p");
+      notice.className = "modal-copy";
+      notice.textContent = "Esta confirmação altera apenas os dados temporários desta sessão de demonstração.";
+      const actions = document.createElement("div");
+      actions.className = "form-actions";
+      const cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.className = "button button-secondary";
+      cancel.textContent = "Cancelar";
+      cancel.addEventListener("click", () => dialog.close());
+      const confirm = document.createElement("button");
+      confirm.type = "button";
+      confirm.className = "button button-primary";
+      confirm.textContent = "Confirmar simulação";
+      actions.append(cancel, confirm);
+      content.append(summary, notice, actions);
+      confirm.addEventListener("click", async () => {
+        confirm.disabled = true;
+        if (kind === "deposit") {
+          from.balance_cents = String(BigInt(from.balance_cents) + amount);
+          demoAddEntry(from.id, "deposit", "credit", amount);
+        } else if (kind === "withdrawal") {
+          from.balance_cents = String(BigInt(from.balance_cents) - amount);
+          demoAddEntry(from.id, "withdrawal", "debit", amount);
+        } else {
+          from.balance_cents = String(BigInt(from.balance_cents) - amount);
+          target.balance_cents = String(BigInt(target.balance_cents) + amount);
+          demoAddEntry(from.id, "transfer", "debit", amount, target.id);
+          demoAddEntry(target.id, "transfer", "credit", amount, from.id);
+        }
+        dialog.close();
+        await loadCurrentAccount();
+        showMessage("Simulação concluída. Nenhuma operação real foi realizada.");
+      }, { once: true });
+    } catch (error) {
+      showError(error);
+    }
+  });
+  if (!dialog.open) dialog.showModal();
+  input.focus();
+}
+
+// INICIAR O SITE
+
 
 function initialize() {
   // ==========================================
@@ -2241,7 +2419,7 @@ initializeTheme();
     button.classList.add("is-loading");
     try {
       await loadCurrentAccount();
-      showMessage("Saldo e extrato atualizados.");
+      showMessage(state.demo ? "Dados da demonstração atualizados." : "Saldo e extrato atualizados.");
     } catch (error) {
       showError(error);
     } finally {
@@ -2346,7 +2524,7 @@ initializeTheme();
   // BOTÃO DE DEMONSTRAÇÃO
   // ==========================================
 
-$("demo-button").addEventListener("click", openDemo);
+  $("demo-button").addEventListener("click", enterDemo);
 
   // ==========================================
   // CRIAR NOVA CONTA
@@ -2416,6 +2594,7 @@ $("demo-button").addEventListener("click", openDemo);
 
   api.checkDatabase()
     .then(() => {
+      if (state.demo) return;
       document.querySelectorAll("[data-health-status]")
         .forEach(element => {
           element.textContent = "Sistema conectado";
@@ -2423,6 +2602,7 @@ $("demo-button").addEventListener("click", openDemo);
         });
     })
     .catch(() => {
+      if (state.demo) return;
       document.querySelectorAll("[data-health-status]")
         .forEach(element => {
           element.textContent = "Banco indisponível";
