@@ -201,6 +201,10 @@ async function loadAccounts() {
 
 
 async function loadCurrentAccount() {
+  if (state.demo) {
+  renderDashboard();
+  return;
+}
   if (!state.currentAccount) return;
 
   const accountId = state.currentAccount.id;
@@ -1342,6 +1346,17 @@ async function selectAccount(id) {
 }
 
 function logout() {
+  state.demo = false;
+
+document.querySelectorAll(
+  '[data-action="deposit"], ' +
+  '[data-action="withdrawal"], ' +
+  '[data-action="transfer"]'
+).forEach(button => {
+  button.disabled = false;
+});
+
+$("new-account-button").disabled = false;
   api.logout();
 
   state.customer = null;
@@ -2111,6 +2126,75 @@ async function submitWithdrawal(operation) {
 // INICIAR O SITE
 
 
+function openDemo() {
+  state.demo = true;
+
+  state.customer = {
+    name: "Visitante Pulso",
+    email: "demo@pulso.local"
+  };
+
+  const account = {
+    id: 100001,
+    balance_cents: "875450"
+  };
+
+  state.accounts = [account];
+  state.currentAccount = account;
+
+  const now = Date.now();
+
+  const transactions = [
+    ["deposit", "credit", 500000, 500000],
+    ["deposit", "credit", 350000, 850000],
+    ["withdrawal", "debit", 7500, 842500],
+    ["deposit", "credit", 65000, 907500],
+    ["transfer", "debit", 32050, 875450]
+  ];
+
+  state.entries = transactions.map((item, index) => ({
+    id: index + 1,
+    type: item[0],
+    direction: item[1],
+    amount_cents: String(item[2]),
+    balance_after_cents: String(item[3]),
+    created_at: new Date(
+      now - (4 - index) * 86400000
+    ).toISOString()
+  })).reverse();
+
+  state.statementCursor = null;
+  state.statementHasMore = false;
+
+  $("auth-view").hidden = true;
+  $("app-view").hidden = false;
+
+  $("customer-name").textContent = state.customer.name;
+  $("customer-email").textContent = state.customer.email;
+  $("customer-initials").textContent = "V";
+  $("account-owner").textContent = state.customer.name;
+
+  $("account-selector").replaceChildren(
+    new Option("Conta 100001", "100001")
+  );
+
+  // Operações reais ficam indisponíveis na demonstração.
+  document.querySelectorAll(
+    '[data-action="deposit"], ' +
+    '[data-action="withdrawal"], ' +
+    '[data-action="transfer"]'
+  ).forEach(button => {
+    button.disabled = true;
+  });
+
+  $("new-account-button").disabled = true;
+
+  showView("overview");
+  renderDashboard();
+
+  showMessage("Bem-vindo à demonstração da Pulso!");
+}
+
 function initialize() {
   // ==========================================
   // LOGIN E CADASTRO
@@ -2262,11 +2346,7 @@ initializeTheme();
   // BOTÃO DE DEMONSTRAÇÃO
   // ==========================================
 
-  $("demo-button").addEventListener("click", () => {
-    showMessage(
-      "Crie uma conta de teste para explorar o painel."
-    );
-  });
+$("demo-button").addEventListener("click", openDemo);
 
   // ==========================================
   // CRIAR NOVA CONTA
